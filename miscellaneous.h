@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+#include <vector>
+#include <typeinfo>
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -152,6 +155,11 @@ public:
 1. Sorter (templated)
     Use: Sort vectors/lists of numbers, strings, or custom structs (with a comparator).
     Steps: Accept container + comparator → choose algorithm (quick/merge/intro-lite) → sort → optionally return stable/unstable result.
+    Goals:
+        - allow both arrays and vectors to be input in the function (CHECK)
+        - create a system (something like sorter::quicksort()) 
+          to create easier access to different sorting capabilities for the user.
+        - 
 */
 
 // M can be any letter, T is most often used.
@@ -164,6 +172,76 @@ class Sorter {
 private:
     Compare comp;
     std::vector<T> data;
+
+    // will contain private functions 
+    void mergeSort(vector<T> &vect, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        // midpoint
+        int mid = left + (right - left) / 2;
+
+        mergeSort(vect, left, mid);
+        mergeSort(vect, mid + 1, right);
+        merge    (vect, left, mid, right);
+    }
+
+    void merge(vector<T> &vect, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        if (typeid(vect) == std::typeid(int)) {
+            std::vector<int> L(n1), R(n2);
+        }
+        else if (typeid(vect) == std::typeid(string)) {
+            std::vector<std::string> L(n1), R(n2);
+        }
+        else {
+            std::cout << "Unsupported data type" << std::endl;
+            return;
+        }
+
+        // Copy data to temp vectors L[] and R[]
+        for (int i = 0; i < n1; i++) {
+            L[i] = vect[left + i];
+        }
+        for (int j = 0; j < n2; j++) {
+            R[j] = vect[mid + 1 + j];
+        }
+
+        int i = 0, j = 0;
+        int k = left;
+
+        // Merge the temp vectors back 
+        // into arr[left..right]
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                vect[k] = L[i];
+                i++;
+            }
+            else {
+                vect[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        // Copy the remaining elements of L[], 
+        // if there are any
+        while (i < n1) {
+            vect[k] = L[i];
+            i++;
+            k++;
+        }
+
+        // Copy the remaining elements of R[], 
+        // if there are any
+        while (j < n2) {
+            vect[k] = R[j];
+            j++;
+            k++;
+        }
+    }
     
 public:
     // Vector constructor
@@ -174,11 +252,38 @@ public:
     Sorter(const T* arr, size_t size, Compare c = Compare())
         : comp(c), data(arr, arr + size) {}
 
-    template <typename T> T sorter(vector<T> &vector || T arr[]) {
-
+    // Sorter for a vector
+    // Unstable
+    template <typename T> T quicksort(std::vector<T> &vector) {
+        // Get the quicksort program from the other laptop
+        //
+    }
+    // quicksort for an array
+    template <typename T> T quicksort(T &arr[]) {
+        // Get the quicksort program from the other laptop:
+        // partition
+        // function for string sorting
+        // Separate from either ints or strings being used in the parameter
+        // so if int, string function isn't useful
+        // main recursive call
+        // and must differentiate between less than or greater than, so that we know
+        // which direction to sort the data
+    }
+    // Stable
+    template <typename T> T msort(std::vector<T> &vect) {
+        // mergesort for vectors
+        // String sorting vs int sorting probably applies the same here
+        int n = vect.size(); // number of values in the vector
+        mergeSort(vect, 0, n - 1);
+    }
+    template <typename T> t msort(T &arr[]) {
+        // mergesort for arrays
+        int n = arr.size();
+        mergeSort(arr, 0, n - 1);
     }
 };
 
+// Mainly useful for testing
 int main() {
-    std::cout << example<int>(3,7) << std::endl;
+    
 }
