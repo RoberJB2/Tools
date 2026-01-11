@@ -169,7 +169,6 @@ class Sorter {
 private:
     lessComp less{};
     greatComp greater{};
-    std::vector<T> data{};
 
     // will contain private functions 
     void mergeSort(std::span<T> &vect, int left, int right) {
@@ -287,20 +286,7 @@ private:
     }
     
 public:
-
     Sorter() = default;
-    // Vector constructor
-    Sorter(const std::vector<T>& v, lessComp lc = Compare{}, greatComp gc = Compare{})
-        : less(lc), greater(gc), data(v) {}
-
-    // Array constructor
-    Sorter(const T* arr = nullptr, size_t size, lessComp lc = Compare{}, greatComp gc = Compare{})
-        : less(lc), greater(gc), data(arr, arr + size) 
-    {
-            if (arr && size > 0) {
-                data.assign(arr, arr + size);
-            }
-    }
 
     // Sorter for a vector
     // Unstable
@@ -347,7 +333,7 @@ int main() {
     int arr[] = {1,2,3,4,5};
     std::vector<int> vect = {1,2,3,4};
     size_t size = sizeof(arr) / sizeof(arr[0]);
-    Sorter<int> s(arr, size);
+    Sorter<int> s;
     s.merging(arr);
     s.merging(vect);
 
