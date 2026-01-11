@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <typeinfo>
+#include <span>
+#include <functional>
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -162,19 +164,15 @@ public:
         - 
 */
 
-// M can be any letter, T is most often used.
-template <typename M> M example(M x, M y) {
-    return (x > y) ? x : y;
-};
-
-template <typename T, typename Compare = std::less<T>>
+template <typename T, typename lessComp = std::less<T>, typename greatComp = std::greater<T>>
 class Sorter {
 private:
-    Compare comp;
-    std::vector<T> data;
+    lessComp less{};
+    greatComp greater{};
+    std::vector<T> data{};
 
     // will contain private functions 
-    void mergeSort(vector<T> &vect, int left, int right) {
+    void mergeSort(std::span<T> &vect, int left, int right) {
         if (left >= right) {
             return;
         }
@@ -186,7 +184,7 @@ private:
         merge    (vect, left, mid, right);
     }
 
-    void merge(vector<T> &vect, int left, int mid, int right) {
+    void merge(std::vector<T> &vect, int left, int mid, int right) {
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
@@ -280,7 +278,7 @@ private:
     }
 
     // Quicksort function. splits the sort into the left and right sort from the pivot
-    void quickSort(std::string &array[], int low, int high) {
+    void quickSort(std::string array[], int low, int high) {
         if (low < high) {
             int p = partition(array, low, high); 	// New high/low value
             quickSort(array, low, p - 1); 			// Left sort
@@ -289,22 +287,29 @@ private:
     }
     
 public:
+
+    Sorter() = default;
     // Vector constructor
-    Sorter(const std::vector<T>& v, Compare c = Compare())
-        : comp(c), data(v) {}
+    Sorter(const std::vector<T>& v, lessComp lc = Compare{}, greatComp gc = Compare{})
+        : less(lc), greater(gc), data(v) {}
 
     // Array constructor
-    Sorter(const T* arr, size_t size, Compare c = Compare())
-        : comp(c), data(arr, arr + size) {}
+    Sorter(const T* arr = nullptr, size_t size, lessComp lc = Compare{}, greatComp gc = Compare{})
+        : less(lc), greater(gc), data(arr, arr + size) 
+    {
+            if (arr && size > 0) {
+                data.assign(arr, arr + size);
+            }
+    }
 
     // Sorter for a vector
     // Unstable
-    template <typename T> T quicksort(std::vector<T> &vector) {
+    T quicksort(std::vector<T> &vector) {
         // Get the quicksort program from the other laptop
         //
     }
     // quicksort for an array
-    template <typename T> T quicksort(T &arr[]) {
+    T quicksort(T arr[]) {
 
         int n = arr.size();
         quickSort(arr, 0, n - 1);
@@ -318,20 +323,33 @@ public:
         // which direction to sort the data
     }
     // Stable
-    template <typename T> T msort(std::vector<T> &vect) {
+    T msort(std::vector<T> &vect) {
         // mergesort for vectors
         // String sorting vs int sorting probably applies the same here
         int n = vect.size(); // number of values in the vector
         mergeSort(vect, 0, n - 1);
     }
-    template <typename T> t msort(T &arr[]) {
+     
+    T msort(T &arr) {
         // mergesort for arrays
         int n = arr.size();
         mergeSort(arr, 0, n - 1);
+    }
+    
+    T merging(std::span<T> &arrVec) {
+        auto n = arrVec.size();
+        std::cout << "size: " << n << std::endl;
     }
 };
 
 // Mainly useful for testing
 int main() {
-    
+    int arr[] = {1,2,3,4,5};
+    std::vector<int> vect = {1,2,3,4};
+    size_t size = sizeof(arr) / sizeof(arr[0]);
+    Sorter<int> s(arr, size);
+    s.merging(arr);
+    s.merging(vect);
+
+return 0;
 }
