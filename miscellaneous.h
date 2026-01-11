@@ -242,6 +242,51 @@ private:
             k++;
         }
     }
+
+    // Compares both individual strings and is case insensitive by comparing the lowercase version of both string inputs.
+    bool compareStrings(const std::string &a, const std::string &b) {
+        std::string A = a, B = b;
+        transform(A.begin(), A.end(), A.begin(), ::tolower);
+        transform(B.begin(), B.end(), B.begin(), ::tolower);
+        return A < B;
+    }
+
+    // The parition function which holds the main loops of the quicksort
+    int partition(std::string array[], int low, int high) {
+        std::string pivot = array[low]; // Pivot value
+
+        int i = low - 1, j = high + 1; // iterator values i and j, 
+        
+        while (true) {
+        
+            // Find leftmost element greater than or
+            // equal to pivot
+            do {
+                i++;
+            } while (compareStrings(array[i], pivot));
+
+            // Find rightmost element smaller than 
+            // or equal to pivot
+            do {
+                j--;
+            } while (compareStrings(pivot, array[j]));
+
+            // If two pointers met.
+            if (i >= j)
+                return j;
+            // swaps the values
+            swap(array[i], array[j]);
+        }
+    }
+
+    // Quicksort function. splits the sort into the left and right sort from the pivot
+    void quickSort(std::string &array[], int low, int high) {
+        if (low < high) {
+            int p = partition(array, low, high); 	// New high/low value
+            quickSort(array, low, p - 1); 			// Left sort
+            quickSort(array, p + 1, high); 			// Right sort
+        }
+    }
     
 public:
     // Vector constructor
@@ -260,6 +305,9 @@ public:
     }
     // quicksort for an array
     template <typename T> T quicksort(T &arr[]) {
+
+        int n = arr.size();
+        quickSort(arr, 0, n - 1);
         // Get the quicksort program from the other laptop:
         // partition
         // function for string sorting
