@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <span>
 #include <functional>
+#include <iterator>
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -161,7 +162,7 @@ public:
         - allow both arrays and vectors to be input in the function (CHECK)
         - create a system (something like sorter::quicksort()) 
           to create easier access to different sorting capabilities for the user.
-        - 
+        - A later version might include std::variants as part of the program to handle more complexe data sets
 */
 
 template <typename T, typename lessComp = std::less<T>, typename greatComp = std::greater<T>>
@@ -183,15 +184,15 @@ private:
         merge    (vect, left, mid, right);
     }
 
-    void merge(std::vector<T> &vect, int left, int mid, int right) {
+    void merge(std::span<T> &vect, int left, int mid, int right) {
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        if (typeid(vect) == std::typeid(int)) {
-            std::vector<int> L(n1), R(n2);
+        if (std::typeid(vect) == std::typeid(int)) {
+            std::span<int> L(n1), R(n2);
         }
-        else if (typeid(vect) == std::typeid(string)) {
-            std::vector<std::string> L(n1), R(n2);
+        else if (std::typeid(vect) == std::typeid(std::string)) {
+            std::span<std::string> L(n1), R(n2);
         }
         else {
             std::cout << "Unsupported data type" << std::endl;
@@ -248,25 +249,44 @@ private:
         return A < B;
     }
 
-    // The parition function which holds the main loops of the quicksort
-    int partition(std::string array[], int low, int high) {
-        std::string pivot = array[low]; // Pivot value
+    bool compareInts(const int &a, const int &b) {
+        return a < b;
+    }
 
-        int i = low - 1, j = high + 1; // iterator values i and j, 
+    // The parition function which holds the main loops of the quicksort
+    int partition(std::span<T> array) {
+        T pivot = std::begin(array); // Pivot value
+        bool comparisonI{};
+        bool comparisonJ{};
+
+        auto i = array.being();
+        auto j = array.end(); // iterator values i and j
+
+        if (typeid(array) == typeid(int)) {
+            bool comparisonI = compareInts(array[i], pivot);
+            bool comparisonJ = compareInts(pivot, array[j]);
+        }
+        else if (typeid(array) == typeid(std::string)){
+            bool comparisonI = compareStrings(array[i], pivot);
+            bool comparisonJ = compareInts(pivot, array[j]);
+        }
+        else {
+            cout << "Unsupported data type" << endl;
+            return -1;
+        }
         
         while (true) {
-        
             // Find leftmost element greater than or
             // equal to pivot
             do {
                 i++;
-            } while (compareStrings(array[i], pivot));
+            } while (comparisonI);
 
             // Find rightmost element smaller than 
             // or equal to pivot
             do {
                 j--;
-            } while (compareStrings(pivot, array[j]));
+            } while (comparisonJ);
 
             // If two pointers met.
             if (i >= j)
@@ -277,7 +297,7 @@ private:
     }
 
     // Quicksort function. splits the sort into the left and right sort from the pivot
-    void quickSort(std::string array[], int low, int high) {
+    void quickSort(std::span<T> array[], int low, int high) {
         if (low < high) {
             int p = partition(array, low, high); 	// New high/low value
             quickSort(array, low, p - 1); 			// Left sort
@@ -288,14 +308,8 @@ private:
 public:
     Sorter() = default;
 
-    // Sorter for a vector
-    // Unstable
-    T quicksort(std::vector<T> &vector) {
-        // Get the quicksort program from the other laptop
-        //
-    }
     // quicksort for an array
-    T quicksort(T arr[]) {
+    void quicksort(std::span<T> &arr) {
 
         int n = arr.size();
         quickSort(arr, 0, n - 1);
@@ -309,20 +323,14 @@ public:
         // which direction to sort the data
     }
     // Stable
-    T msort(std::vector<T> &vect) {
+    void msort(std::span<T> &arr) {
         // mergesort for vectors
         // String sorting vs int sorting probably applies the same here
-        int n = vect.size(); // number of values in the vector
-        mergeSort(vect, 0, n - 1);
-    }
-     
-    T msort(T &arr) {
-        // mergesort for arrays
-        int n = arr.size();
+        int n = arr.size(); // number of values in the vector
         mergeSort(arr, 0, n - 1);
     }
     
-    T merging(std::span<T> &arrVec) {
+    void test(std::span<T> &arrVec) {
         auto n = arrVec.size();
         std::cout << "size: " << n << std::endl;
     }
@@ -334,8 +342,8 @@ int main() {
     std::vector<int> vect = {1,2,3,4};
     size_t size = sizeof(arr) / sizeof(arr[0]);
     Sorter<int> s;
-    s.merging(arr);
-    s.merging(vect);
+    //s.test(arr);
+    //s.test(vect);
 
 return 0;
 }
