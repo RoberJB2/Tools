@@ -162,7 +162,7 @@ public:
         - allow both arrays and vectors to be input in the function (CHECK)
         - create a system (something like sorter::quicksort()) 
           to create easier access to different sorting capabilities for the user.
-        - A later version might include std::variants as part of the program to handle more complexe data sets
+        - A later version might include std::variants as part of the program to handle more complex data sets
 */
 
 template <typename T, typename lessComp = std::less<T>, typename greatComp = std::greater<T>>
