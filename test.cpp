@@ -8,6 +8,8 @@
 template <std::ranges::sized_range Range>
 void testFunc(Range &&span) {
     using T = std::ranges::range_value_t<Range>;
+    // used to initialize T variables:
+    T sum{};
 
     for (const auto element : span) {
         std::cout << element << ", ";
