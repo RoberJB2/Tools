@@ -263,12 +263,12 @@ private:
         auto j = array.end(); // iterator values i and j
 
         if (typeid(array) == typeid(int)) {
-            bool comparisonI = compareInts(array[i], pivot);
-            bool comparisonJ = compareInts(pivot, array[j]);
+            comparisonI = compareInts(array[i], pivot);
+            comparisonJ = compareInts(pivot, array[j]);
         }
         else if (typeid(array) == typeid(std::string)){
-            bool comparisonI = compareStrings(array[i], pivot);
-            bool comparisonJ = compareInts(pivot, array[j]);
+            comparisonI = compareStrings(array[i], pivot);
+            comparisonJ = compareInts(pivot, array[j]);
         }
         else {
             cout << "Unsupported data type" << endl;
@@ -331,8 +331,9 @@ public:
     }
     
     void test(std::span<T> &arrVec) {
-        auto n = arrVec.size();
+        auto n = std::end(arrVec);
         std::cout << "size: " << n << std::endl;
+        std::cout << "index ex: " << arrVec[n] << ", and using n: " << arrVec[5] << std::endl;
     }
 };
 
@@ -342,8 +343,8 @@ int main() {
     std::vector<int> vect = {1,2,3,4};
     size_t size = sizeof(arr) / sizeof(arr[0]);
     Sorter<int> s;
-    //s.test(arr);
-    //s.test(vect);
+    s.test(arr);
+    s.test(vect);
 
 return 0;
 }
