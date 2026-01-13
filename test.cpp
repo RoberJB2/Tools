@@ -3,29 +3,26 @@
 #include <vector>
 #include <array>
 #include <typeinfo>
+#include <ranges>
 
-template <typename T>
-void testFunc(std::span<T> arrVec) {
-    for (T& value : arrVec) {
-        std::cout << value << ", ";
-    }
-    std::cout << "\n" << endl;
-}
+template <std::ranges::sized_range Range>
+void testFunc(Range &&span) {
+    using T = std::ranges::range_value_t<Range>;
 
-template <typename T>
-void printSpan(std::span<const T> s) {
-    for (const T& x : s) {
-        std::cout << x << ' ';
+    for (const auto element : span) {
+        std::cout << element << ", ";
     }
-    std::cout << '\n';
+    std::cout << "\n\n";
 }
 
 int main() {
-    std::vector<int> vector;
+    std::vector<int> vec = {1,2,3,4,5};
     int arr[] = {1,2,3,4,5};
     std::array<int, 5> c_arr = {1,2,3,4,5};
-    testFunc(vector);
+
+    testFunc(vec);
     testFunc(arr);
+    testFunc(c_arr);
 
     return 0;
 }
