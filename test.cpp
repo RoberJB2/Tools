@@ -5,14 +5,11 @@
 #include <typeinfo>
 #include <ranges>
 
-template <std::ranges::sized_range Range>
-void testFunc(Range &&span) {
-    using T = std::ranges::range_value_t<Range>;
-    // used to initialize T variables:
-    T sum{};
-
-    for (const auto element : span) {
-        std::cout << element << ", ";
+template <typename T>
+void testFuncSpan(const T& arr) {
+    auto s = std::span(arr);
+    for (const auto& value : s) {
+        std::cout << value << ", ";
     }
     std::cout << "\n\n";
 }
@@ -22,9 +19,15 @@ int main() {
     int arr[] = {1,2,3,4,5};
     std::array<int, 5> c_arr = {1,2,3,4,5};
 
-    testFunc(vec);
-    testFunc(arr);
-    testFunc(c_arr);
+    testFuncSpan(vec);
+    testFuncSpan(arr);
+    testFuncSpan(c_arr);
+
+    std::cout << "Non-span test: \n" << std::endl;
+
+    //testFunc(vec);
+    //testFunc(arr);
+    //testFunc(c_arr);
 
     return 0;
 }
