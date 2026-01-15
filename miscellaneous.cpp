@@ -206,17 +206,17 @@ private:
         auto R = s.subspan(mid + 1, n2);
 
         // Supported type check
-        if (typeid(arr) != typeid(char) && typeid(arr) != typeid(int) && typid(arr) != typeid(std::string) ) {
+        if (typeid(arr) != typeid(char) && typeid(arr) != typeid(int) && typeid(arr) != typeid(std::string) ) {
             std::cout << "Unsupported data type" << std::endl;
             return;
         }
 
         // Copy data to temp vectors L[] and R[]
         for (int i = 0; i < n1; i++) {
-            L.at(i) = s.at(left + i);
+            L[i] = s[left + i];
         }
         for (int j = 0; j < n2; j++) {
-            R.at(j) = s.at(mid + 1 + j);
+            R[j] = s[mid + 1 + j];
         }
 
         int i = 0, j = 0;
@@ -226,12 +226,12 @@ private:
         // into arr[left..right]
         if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
             while (i < n1 && j < n2) {
-                if (compareStringsMerge(L.at(i), R.at(j))) {
-                    s.at(k) = L.at(i);
+                if (compareStringsMerge(L[i], R[j])) {
+                    s[k] = L[i];
                     i++;
                 }
                 else {
-                    s.at(k) = R.at(j);
+                    s[k] = R[j];
                     j++;
                 }
                 k++;
@@ -239,12 +239,12 @@ private:
         }
         else {
             while (i < n1 && j < n2) {
-                if (compareInts(L.at(i), R.at(j))) {
-                    s.at(k) = L.at(i);
+                if (compareInts(L[i], R[j])) {
+                    s[k] = L[i];
                     i++;
                 }
                 else {
-                    s.at(k) = R.at(j);
+                    s[k] = R[j];
                     j++;
                 }
                 k++;
@@ -255,7 +255,7 @@ private:
         // Copy the remaining elements of L[], 
         // if there are any
         while (i < n1) {
-            s.at(k) = L.at(i);
+            s[k] = L[i];
             i++;
             k++;
         }
@@ -263,15 +263,10 @@ private:
         // Copy the remaining elements of R[], 
         // if there are any
         while (j < n2) {
-            s.at(k) = R.at(j);
+            s[k] = R[j];
             j++;
             k++;
         }
-    }
-
-    template <typename T>
-    void swapSpanElems(std::span<T> s, std::size_t i, std::size_t j) {
-        std::swap(s[i], s[j]);
     }
 
     // Compares both individual strings and is case insensitive by comparing the lowercase version of both string inputs.
@@ -296,24 +291,23 @@ private:
 
     // The parition function which holds the main loops of the quicksort
     template <typename T>
-    int partition(const T& arr) {
+    int partition(const T& arr, std::size_t i, std::size_t j) {
         auto s = std::span(arr);
-        T pivot = std::begin(s); // Pivot value
-        int i, j = 0;
+        T pivot = s[i]; // Pivot value
         
-        if (typeid(arr) == typeid(int)) {
+        if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
             while (true) {
                 // Find leftmost element greater than or
                 // equal to pivot
                 do {
                     i++;
-                } while (compareInts(s.at(i), pivot)); // a < b
+                } while (compareStrings(s[i], *pivot)); // a < b
 
                 // Find rightmost element smaller than 
                 // or equal to pivot
                 do {
                     j--;
-                } while (compareInts(pivot, s.at(j)));
+                } while (compareStrings(*pivot, s[j]));
 
                 // If two pointers met.
                 if (i >= j)
@@ -322,30 +316,26 @@ private:
                 std::swap(s[i], s[j]);
             }
         }
-        else if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
+        else {
             while (true) {
                 // Find leftmost element greater than or
                 // equal to pivot
                 do {
                     i++;
-                } while (compareStrings(s.at(i), pivot)); // a < b
+                } while (s[i] < *pivot); // a < b
 
                 // Find rightmost element smaller than 
                 // or equal to pivot
                 do {
                     j--;
-                } while (compareStrings(pivot, s.at(j)));
+                } while (*pivot < s[j]);
 
                 // If two pointers met.
                 if (i >= j)
                     return j;
                 // swaps the values
-                std::swap(s.at(i), s.at(j));
+                std::swap(s[i], s[j]);
             }
-        }
-        else {
-            std::cout << "unsupported data type" << std::endl;
-            return -1;
         }
     }
 
@@ -370,32 +360,39 @@ public:
     // quicksort for an array
     template <typename T>
     void quicksort(const T& arr) {
-        int n = arr.size();
-        quickSort(arr, 0, n - 1);
-        // Get the quicksort program from the other laptop:
-        // partition
-        // function for string sorting
-        // Separate from either ints or strings being used in the parameter
-        // so if int, string function isn't useful
-        // main recursive call
-        // and must differentiate between less than or greater than, so that we know
-        // which direction to sort the data
+        auto s = std::span(arr);
+        if (!s.empty()) {
+            std::size_t lastIndex = s.size() - 1;
+            Sorter::quickSort(arr, 0, lastIndex);
+        } else {
+            std::cout << "data set is empty\n";
+        }
     }
+
     // Stable
     template <typename T>
     void msort(const T& arr) {
         // mergesort for vectors
         // String sorting vs int sorting probably applies the same here
-        auto n = std::end(arr); // number of values in the vector
-        mergeSort(arr, 0, n - 1);
+        auto s = std::span(arr);
+        if (!s.empty()) {
+            std::size_t lastIndex = s.size() - 1;
+            Sorter::mergeSort(arr, 0, lastIndex);
+        } else {
+            std::cout << "data set is empty\n";
+        }
     }
     
     template <typename T>
     void test(const T& arr) {
         auto s = std::span(arr);
-        auto n = std::end(s);
-        std::cout << "size: " << n << std::endl;
-        std::cout << "index ex: " << s.at(5) << ", and using n: " << s.at(n) << std::endl;
+        if (!s.empty()) {
+            std::size_t lastIndex = s.size() - 1;
+            std::cout << "last index: " << lastIndex
+                    << ", last value: " << s[lastIndex] << "\n";
+        } else {
+            std::cout << "span is empty\n";
+        }
     }
 };
 
@@ -412,8 +409,14 @@ int main() {
     std::array<std::string, 9> stringSTD = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
 
     Sorter s;
+    // WORKS
     s.test(arr);
     s.test(vec);
+    // Testing:
+    s.msort(arr);
+    s.quicksort(arr);
+    s.msort(vec);
+    s.quicksort(vec);
 
 return 0;
 }
