@@ -403,6 +403,7 @@ public:
 int main() {
     int arr[] = {6,2,7,4,3};
     std::string arrString[] = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
+    char arrChar[] = {'a', 'c', 'B', 'F', 'Z', 'g', '1', 'v', 'i', 'b'};
     
     std::vector<int> vec = {1,8,0,25,13};
     std::vector<std::string> vecString = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
