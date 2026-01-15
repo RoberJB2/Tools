@@ -5,6 +5,7 @@
 #include <span>
 #include <functional>
 #include <iterator>
+#include <array>
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -14,7 +15,7 @@
         Steps: Accept container + comparator → choose algorithm (quick/merge/intro-lite) → sort → optionally return stable/unstable result.
 
     2. Searcher (templated)
-        Use: Linear search, binary search (sorted), and “find first matching predicate.”
+        Use: Linear search (unsorted), binary search (sorted), and “find first matching predicate.”
         Steps: Accept container + target/predicate → pick search mode → scan or binary search → return index/iterator + “found” flag.
 
     3. Uniq + Deduper
@@ -185,6 +186,7 @@ private:
         mergeSort(arr, mid + 1, right);
         merge    (arr, left, mid, right);
     }
+
     template <typename T>
     void merge(const T& arr, int left, int mid, int right) {
         // Takes span separately of computing the type of the input variable const T& arr
@@ -196,27 +198,21 @@ private:
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        std::vector<int> L(n1), R(n2);
-        std::string L[n1], R[n2];
-        // take the span
+        std::span<T> L(s, n1);
+        std::span<T> R = subspan(mid, n2);
 
-        if (std::typeid(arr) == std::typeid(int)) {
-            std::span<int> L(n1), R(n2);
-        }
-        else if (std::typeid(arr) == std::typeid(std::string)) {
-            std::span<std::string> L(n1), R(n2);
-        }
-        else {
+        // Supported type check
+        if (typeid(arr) != typeid(char) && typeid(arr) != typeid(int) && typid(arr) != typeid(std::string) ) {
             std::cout << "Unsupported data type" << std::endl;
             return;
         }
 
         // Copy data to temp vectors L[] and R[]
         for (int i = 0; i < n1; i++) {
-            L[i] = arr[left + i];
+            L.at(i) = s.at(left + i);
         }
         for (int j = 0; j < n2; j++) {
-            R[j] = arr[mid + 1 + j];
+            R.at(j) = s.at(mid + 1 + j);
         }
 
         int i = 0, j = 0;
@@ -224,22 +220,38 @@ private:
 
         // Merge the temp vectors back 
         // into arr[left..right]
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
-                arr[k] = L[i];
-                i++;
+        if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
+            while (i < n1 && j < n2) {
+                if (compareStringsMerge(L.at(i), R.at(j))) {
+                    s.at(k) = L.at(i);
+                    i++;
+                }
+                else {
+                    s.at(k) = R.at(j);
+                    j++;
+                }
+                k++;
             }
-            else {
-                arr[k] = R[j];
-                j++;
-            }
-            k++;
         }
+        else {
+            while (i < n1 && j < n2) {
+                if (compareInts(L.at(i), R.at(j))) {
+                    s.at(k) = L.at(i);
+                    i++;
+                }
+                else {
+                    s.at(k) = R.at(j);
+                    j++;
+                }
+                k++;
+            }
+        }
+            
 
         // Copy the remaining elements of L[], 
         // if there are any
         while (i < n1) {
-            arr[k] = L[i];
+            s.at(k) = L.at(i);
             i++;
             k++;
         }
@@ -247,7 +259,7 @@ private:
         // Copy the remaining elements of R[], 
         // if there are any
         while (j < n2) {
-            arr[k] = R[j];
+            s.at(k) = R.at(j);
             j++;
             k++;
         }
@@ -261,6 +273,14 @@ private:
         return A < B;
     }
 
+    // Used for mergesort and deals with upper and lower case characters/strings
+    bool compareStringsMerge(const std::string &a, const std::string &b) {
+        std::string A = a, B = b;
+        transform(A.begin(), A.end(), A.begin(), ::tolower);
+        transform(B.begin(), B.end(), B.begin(), ::tolower);
+        return A <= B;
+    }
+
     bool compareInts(const int &a, const int &b) {
         return a < b;
     }
@@ -270,43 +290,53 @@ private:
     int partition(const T& arr) {
         auto s = std::span(arr);
         T pivot = std::begin(s); // Pivot value
-        bool comparisonI{};
-        bool comparisonJ{};
-
-        auto i = s.being();
-        auto j = s.end(); // iterator values i and j
-
+        int i, j = 0;
+        
         if (typeid(arr) == typeid(int)) {
-            comparisonI = compareInts(arr[i], pivot);
-            comparisonJ = compareInts(pivot, arr[j]);
+            while (true) {
+                // Find leftmost element greater than or
+                // equal to pivot
+                do {
+                    i++;
+                } while (compareInts(s.at(i), pivot)); // a < b
+
+                // Find rightmost element smaller than 
+                // or equal to pivot
+                do {
+                    j--;
+                } while (compareInts(pivot, s.at(j)));
+
+                // If two pointers met.
+                if (i >= j)
+                    return j;
+                // swaps the values
+                swap(s[i], s[j]);
+            }
         }
-        else if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)){
-            comparisonI = compareStrings(arr[i], pivot);
-            comparisonJ = compareInts(pivot, arr[j]);
+        else if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
+            while (true) {
+                // Find leftmost element greater than or
+                // equal to pivot
+                do {
+                    i++;
+                } while (compareStrings(s[i], pivot)); // a < b
+
+                // Find rightmost element smaller than 
+                // or equal to pivot
+                do {
+                    j--;
+                } while (compareStrings(pivot, s[j]));
+
+                // If two pointers met.
+                if (i >= j)
+                    return j;
+                // swaps the values
+                swap(s[i], s[j]);
+            }
         }
         else {
-            cout << "Unsupported data type" << endl;
+            std::cout << "unsupported data type" << std::endl;
             return -1;
-        }
-        
-        while (true) {
-            // Find leftmost element greater than or
-            // equal to pivot
-            do {
-                i++;
-            } while (comparisonI);
-
-            // Find rightmost element smaller than 
-            // or equal to pivot
-            do {
-                j--;
-            } while (comparisonJ);
-
-            // If two pointers met.
-            if (i >= j)
-                return j;
-            // swaps the values
-            swap(arr[i], arr[j]);
         }
     }
 
@@ -331,7 +361,6 @@ public:
     // quicksort for an array
     template <typename T>
     void quicksort(const T& arr) {
-
         int n = arr.size();
         quickSort(arr, 0, n - 1);
         // Get the quicksort program from the other laptop:
@@ -362,9 +391,15 @@ public:
 
 // Mainly useful for testing
 int main() {
-    int arr[] = {1,2,3,4,5};
-    std::vector<int> vec = {1,2,3,4};
-    size_t size = sizeof(arr) / sizeof(arr[0]);
+    int arr[] = {6,2,7,4,3};
+    std::string arrString[] = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
+    
+    std::vector<int> vec = {1,8,0,25,13};
+    std::vector<std::string> vecString = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
+    
+    std::array<int, 5> arrSTD = {9,20,3,7,1};
+    std::array<std::string, 9> stringSTD = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
+
     Sorter s;
     s.test(arr);
     s.test(vec);
