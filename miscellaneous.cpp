@@ -178,21 +178,18 @@ public:
 class Sorter {
 private:
     // will contain private functions 
-    template <typename T>
-    void mergeSort(const T& arr, int left, int right) {
-        if (left >= right) {
-            return;
-        }
-        // midpoint
-        int mid = left + (right - left) / 2;
+    template <typename T, typename Less>
+    void mergeSort(T& arr, int left, int right, Less less) {
+        if (left >= right) return;
 
-        mergeSort(arr, left, mid);
-        mergeSort(arr, mid + 1, right);
-        merge    (arr, left, mid, right);
+        int mid = left + (right - left) / 2;
+        mergeSort(arr, left, mid, less);
+        mergeSort(arr, mid + 1, right, less);
+        merge    (arr, left, mid, right, less);
     }
 
-    template <typename T>
-    void merge(const T& arr, int left, int mid, int right) {
+    template <typename T, typename Less >
+    void merge(T& arr, int left, int mid, int right, Less less) {
         // Takes span separately of computing the type of the input variable const T& arr
         // This is because the compilar can't do both at the same type
         // Ex: std::span<T> arr can't be a function parameter. Compiler can't compute span and T
@@ -202,71 +199,31 @@ private:
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        auto L = s.first(n1);
-        auto R = s.subspan(mid + 1, n2);
+        using Elem = typename decltype(s)::element_type;
 
-        // Supported type check
-        if (typeid(arr) != typeid(char) && typeid(arr) != typeid(int) && typeid(arr) != typeid(std::string) ) {
-            std::cout << "Unsupported data type" << std::endl;
-            return;
-        }
+        // REAL temp buffers (do not alias s)
+        std::vector<Elem> L;
+        std::vector<Elem> R;
+        L.reserve(n1);
+        R.reserve(n2);
 
-        // Copy data to temp vectors L[] and R[]
-        for (int i = 0; i < n1; i++) {
-            L[i] = s[left + i];
-        }
-        for (int j = 0; j < n2; j++) {
-            R[j] = s[mid + 1 + j];
-        }
+        for (int i = 0; i < n1; ++i) L.push_back(s[left + i]);
+        for (int j = 0; j < n2; ++j) R.push_back(s[mid + 1 + j]);
 
-        int i = 0, j = 0;
-        int k = left;
+        int i = 0, j = 0, k = left;
 
-        // Merge the temp vectors back 
-        // into arr[left..right]
-        if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
-            while (i < n1 && j < n2) {
-                if (compareStringsMerge(L[i], R[j])) {
-                    s[k] = L[i];
-                    i++;
-                }
-                else {
-                    s[k] = R[j];
-                    j++;
-                }
-                k++;
+        // Stable merge using comparator:
+        // take from left when equal
+        while (i < n1 && j < n2) {
+            if (!less(R[j], L[i])) {     // i.e., L[i] <= R[j]
+                s[k++] = L[i++];
+            } else {
+                s[k++] = R[j++];
             }
         }
-        else {
-            while (i < n1 && j < n2) {
-                if (compareInts(L[i], R[j])) {
-                    s[k] = L[i];
-                    i++;
-                }
-                else {
-                    s[k] = R[j];
-                    j++;
-                }
-                k++;
-            }
-        }
-            
 
-        // Copy the remaining elements of L[], 
-        // if there are any
-        while (i < n1) {
-            s[k] = L[i];
-            i++;
-            k++;
-        }
-
-        // Copy the remaining elements of R[], 
-        // if there are any
-        while (j < n2) {
-            s[k] = R[j];
-            j++;
-            k++;
-        }
+        while (i < n1) s[k++] = L[i++];
+        while (j < n2) s[k++] = R[j++];
     }
 
     // Compares both individual strings and is case insensitive by comparing the lowercase version of both string inputs.
@@ -285,68 +242,28 @@ private:
         return A <= B;
     }
 
-    bool compareInts(const int &a, const int &b) {
-        return a < b;
-    }
+    template <typename T, std::size_t Extent, typename Less>
+    int partition(std::span<T, Extent> s, int low, int high, Less less) {
+        auto pivot = s[low];      // pivot value (copy)
+        int i = low - 1;
+        int j = high + 1;
 
-    // The parition function which holds the main loops of the quicksort
-    template <typename T>
-    int partition(const T& arr, std::size_t i, std::size_t j) {
-        auto s = std::span(arr);
-        T pivot = s[i]; // Pivot value
-        
-        if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
-            while (true) {
-                // Find leftmost element greater than or
-                // equal to pivot
-                do {
-                    i++;
-                } while (compareStrings(s[i], *pivot)); // a < b
+        while (true) {
+            do { ++i; } while (less(s[i], pivot));   // while s[i] < pivot
+            do { --j; } while (less(pivot, s[j]));   // while pivot < s[j]
 
-                // Find rightmost element smaller than 
-                // or equal to pivot
-                do {
-                    j--;
-                } while (compareStrings(*pivot, s[j]));
-
-                // If two pointers met.
-                if (i >= j)
-                    return j;
-                // swaps the values
-                std::swap(s[i], s[j]);
-            }
-        }
-        else {
-            while (true) {
-                // Find leftmost element greater than or
-                // equal to pivot
-                do {
-                    i++;
-                } while (s[i] < *pivot); // a < b
-
-                // Find rightmost element smaller than 
-                // or equal to pivot
-                do {
-                    j--;
-                } while (*pivot < s[j]);
-
-                // If two pointers met.
-                if (i >= j)
-                    return j;
-                // swaps the values
-                std::swap(s[i], s[j]);
-            }
+            if (i >= j) return j;
+            std::swap(s[i], s[j]);
         }
     }
 
-    // Quicksort function. splits the sort into the left and right sort from the pivot
-    template <typename T>
-    void quickSort(const T& arr, int low, int high) {
-        if (low < high) {
-            int p = partition(arr, low, high); 	// New high/low value
-            quickSort(arr, low, p - 1); 			// Left sort
-            quickSort(arr, p + 1, high); 			// Right sort
-        }
+    template <typename T, std::size_t Extent, typename Less>
+    void quickSort(std::span<T, Extent> s, int low, int high, Less less) {
+        if (low >= high) return;
+
+        int p = partition(s, low, high, less);
+        quickSort(s, low, p, less);        // left:  [low..p]
+        quickSort(s, p + 1, high, less);   // right: [p+1..high]
     }
 
 public:
@@ -358,29 +275,40 @@ public:
     //template <typename T>
     //explicit Sorter(std::less<T>& lessOp = std::less) : lessOp_(lessOp) {}
     // quicksort for an array
-    template <typename T>
-    void quicksort(const T& arr) {
+    template <typename T, typename Less = std::less<>>
+    void quicksort(T& arr, Less less = {}) {
         auto s = std::span(arr);
-        if (!s.empty()) {
-            std::size_t lastIndex = s.size() - 1;
-            Sorter::quickSort(arr, 0, lastIndex);
-        } else {
+        if (s.empty()) {
             std::cout << "data set is empty\n";
+            return;
         }
+
+        int high = static_cast<int>(s.size()) - 1;   // safe unless size > INT_MAX
+        quickSort(s, 0, high, less);
+
+        std::cout << "Quick Sort: ";
+        for (int i = 0; i < s.size() - 1; i++) {
+            std::cout << s[i] << ", ";
+        }
+        std::cout << "\n\n";
     }
 
-    // Stable
-    template <typename T>
-    void msort(const T& arr) {
-        // mergesort for vectors
-        // String sorting vs int sorting probably applies the same here
+    template <typename T, typename Less = std::less<>>
+    void msort(T& arr, Less less = {}) {
         auto s = std::span(arr);
-        if (!s.empty()) {
-            std::size_t lastIndex = s.size() - 1;
-            Sorter::mergeSort(arr, 0, lastIndex);
-        } else {
+        if (s.empty()) {
             std::cout << "data set is empty\n";
+            return;
         }
+
+        int high = static_cast<int>(s.size()) - 1;
+        mergeSort(s, 0, high, less);
+
+        std::cout << "Merge Sort: ";
+        for (int i = 0; i < s.size() - 1; i++) {
+            std::cout << s[i] << ", ";
+        }
+        std::cout << "\n\n";
     }
     
     template <typename T>
@@ -410,13 +338,21 @@ int main() {
 
     Sorter s;
     // WORKS
-    s.test(arr);
-    s.test(vec);
+    //s.test(arr);
+    //s.test(vec);
+    // WORKS
+    //s.msort(arr);
+    //s.quicksort(arr);
+    //s.msort(vec);
+    //s.quicksort(vec);
+
     // Testing:
-    s.msort(arr);
-    s.quicksort(arr);
-    s.msort(vec);
-    s.quicksort(vec);
+    s.msort(arrChar);
+    s.quicksort(arrChar);
+    s.msort(arrString);
+    s.quicksort(arrString);
+    s.msort(vecString);
+    s.quicksort(vecString);
 
 return 0;
 }
