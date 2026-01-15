@@ -5,7 +5,11 @@
 #include <span>
 #include <functional>
 #include <iterator>
-#include <array>
+#include <array>        // std::array 
+#include <algorithm>    // std::transform
+#include <cctype>       // std::toupper/tolower
+#include <utility>      // std::swap
+#include <cstddef>      // std::size_t
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -265,6 +269,11 @@ private:
         }
     }
 
+    template <typename T>
+    void swapSpanElems(std::span<T> s, std::size_t i, std::size_t j) {
+        std::swap(s[i], s[j]);
+    }
+
     // Compares both individual strings and is case insensitive by comparing the lowercase version of both string inputs.
     bool compareStrings(const std::string &a, const std::string &b) {
         std::string A = a, B = b;
@@ -310,7 +319,7 @@ private:
                 if (i >= j)
                     return j;
                 // swaps the values
-                swap(s[i], s[j]);
+                std::swap(s[i], s[j]);
             }
         }
         else if (typeid(arr) == typeid(std::string) || typeid(arr) == typeid(char)) {
@@ -319,19 +328,19 @@ private:
                 // equal to pivot
                 do {
                     i++;
-                } while (compareStrings(s[i], pivot)); // a < b
+                } while (compareStrings(s.at(i), pivot)); // a < b
 
                 // Find rightmost element smaller than 
                 // or equal to pivot
                 do {
                     j--;
-                } while (compareStrings(pivot, s[j]));
+                } while (compareStrings(pivot, s.at(j)));
 
                 // If two pointers met.
                 if (i >= j)
                     return j;
                 // swaps the values
-                swap(s[i], s[j]);
+                std::swap(s.at(i), s.at(j));
             }
         }
         else {
@@ -384,9 +393,9 @@ public:
     template <typename T>
     void test(const T& arr) {
         auto s = std::span(arr);
-        auto n = std::end(arr);
+        auto n = std::end(s);
         std::cout << "size: " << n << std::endl;
-        std::cout << "index ex: " << s[n] << ", and using n: " << s[5] << std::endl;
+        std::cout << "index ex: " << s.at(5) << ", and using n: " << s.at(n) << std::endl;
     }
 };
 
