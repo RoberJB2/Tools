@@ -198,8 +198,8 @@ private:
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        std::span<T> L(s, n1);
-        std::span<T> R = subspan(mid, n2);
+        auto L = s.first(n1);
+        auto R = s.subspan(mid + 1, n2);
 
         // Supported type check
         if (typeid(arr) != typeid(char) && typeid(arr) != typeid(int) && typid(arr) != typeid(std::string) ) {
@@ -377,15 +377,16 @@ public:
     void msort(const T& arr) {
         // mergesort for vectors
         // String sorting vs int sorting probably applies the same here
-        int n = arr.size(); // number of values in the vector
+        auto n = std::end(arr); // number of values in the vector
         mergeSort(arr, 0, n - 1);
     }
     
     template <typename T>
     void test(const T& arr) {
+        auto s = std::span(arr);
         auto n = std::end(arr);
         std::cout << "size: " << n << std::endl;
-        std::cout << "index ex: " << arrVec[n] << ", and using n: " << arrVec[5] << std::endl;
+        std::cout << "index ex: " << s[n] << ", and using n: " << s[5] << std::endl;
     }
 };
 
