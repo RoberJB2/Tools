@@ -133,8 +133,8 @@
 */
 
 // Binary Search
-template <typename T>
-int binarySearch(T& arr, int x) {
+template <typename T, typename value>
+int binarySearch(T& arr, const value& x) {
     auto s = std::span(arr);
     int low = 0;
     int high = s.size() - 1;
@@ -159,8 +159,8 @@ int binarySearch(T& arr, int x) {
 }
 
 // Linear Search
-template <typename T>
-int search(T& arr, int x) {
+template <typename T, typename value>
+int search(T& arr, const value& x) {
     auto s = std::span(arr);
     
     // Iterate over the array in order to
@@ -179,8 +179,10 @@ int main() {
     // Sort data
     s.quicksort(arr);
     // Search data
-    binarySearch(arr, 5);
-    search(arrNo, 7);
+    int result = binarySearch(arr, 5);
+    int result2 = search(arrNo, 7);
+
+    std::cout << arr[result] << " at " << result << ", " << arrNo[result2] << " at " << result2 << std::endl;
 
 return 0;
 }
