@@ -287,7 +287,7 @@ public:
         quickSort(s, 0, high, less);
 
         std::cout << "Quick Sort: ";
-        for (int i = 0; i < s.size() - 1; i++) {
+        for (int i = 0; i < s.size(); i++) {
             std::cout << s[i] << ", ";
         }
         std::cout << "\n\n";
@@ -305,22 +305,23 @@ public:
         mergeSort(s, 0, high, less);
 
         std::cout << "Merge Sort: ";
-        for (int i = 0; i < s.size() - 1; i++) {
+        for (int i = 0; i < s.size(); i++) {
             std::cout << s[i] << ", ";
         }
         std::cout << "\n\n";
     }
-    
     template <typename T>
-    void test(const T& arr) {
-        auto s = std::span(arr);
-        if (!s.empty()) {
-            std::size_t lastIndex = s.size() - 1;
-            std::cout << "last index: " << lastIndex
-                    << ", last value: " << s[lastIndex] << "\n";
-        } else {
-            std::cout << "span is empty\n";
-        }
+    void quicksort_ci(T& v) {
+        // lambda is defined *inside the class*, not in main
+        this->quicksort(v, [this](const std::string& a, const std::string& b) {
+            return compareStrings(a, b);
+        });
+    }
+    template <typename T>
+    void msort_ci(T& v) {
+        this->msort(v, [this](const std::string& a, const std::string& b) {
+            return compareStringsMerge(a, b);
+        });
     }
 };
 
@@ -353,6 +354,12 @@ int main() {
     s.quicksort(arrString);
     s.msort(vecString);
     s.quicksort(vecString);
+
+    // Case-Insensitive, only used for strings.
+    s.msort_ci(vecString);
+    s.quicksort_ci(vecString);
+    s.msort_ci(arrString);
+    s.quicksort_ci(arrString);
 
 return 0;
 }
