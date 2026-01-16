@@ -338,28 +338,36 @@ int main() {
     std::array<std::string, 9> stringSTD = {"hello", "make", "fish", "apple", "BOGO", "banana", "WoAh", "woah", "werewolf"};
 
     Sorter s;
-    // WORKS
+    // All tests below function properly, except for a slight difference between the merge and quicksort
+    // Where quicksort appears to be stable and merge isn't. Which is odd. The "WoAh", and "woah" are swapped.
+
     //s.test(arr);
     //s.test(vec);
-    // WORKS
+    
     //s.msort(arr);
     //s.quicksort(arr);
     //s.msort(vec);
     //s.quicksort(vec);
 
-    // Testing:
-    s.msort(arrChar);
-    s.quicksort(arrChar);
-    s.msort(arrString);
-    s.quicksort(arrString);
-    s.msort(vecString);
-    s.quicksort(vecString);
+    //s.msort(arrChar);
+    //s.quicksort(arrChar);
+    //s.msort(arrString);
+    //s.quicksort(arrString);
+    //s.msort(vecString);
+    //s.quicksort(vecString);
 
     // Case-Insensitive, only used for strings.
-    s.msort_ci(vecString);
-    s.quicksort_ci(vecString);
-    s.msort_ci(arrString);
-    s.quicksort_ci(arrString);
+    //s.msort_ci(vecString);
+    //s.quicksort_ci(vecString);
+    //s.msort_ci(arrString);
+    //s.quicksort_ci(arrString);
+
+    //s.msort(arrSTD);
+    //s.quicksort(arrSTD);
+    //s.msort(stringSTD);
+    //s.quicksort(stringSTD);
+    //s.msort_ci(stringSTD);
+    //s.quicksort_ci(stringSTD);
 
 return 0;
 }
