@@ -163,6 +163,7 @@ public:
         }
         std::cout << "\n\n";
     }
+    // Case insensitive lambda for string sorting (quicksort)
     template <typename T>
     void quicksort_ci(T& v) {
         // lambda is defined *inside the class*, not in main
@@ -170,6 +171,7 @@ public:
             return compareStrings(a, b);
         });
     }
+    // Case insensitive lambda for string sorting (merge sort)
     template <typename T>
     void msort_ci(T& v) {
         this->msort(v, [this](const std::string& a, const std::string& b) {
