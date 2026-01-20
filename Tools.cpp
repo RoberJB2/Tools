@@ -175,7 +175,7 @@ int main() {
     Sorter s;
     int arr[] = {9,5,7,4,12};
     int arrNo[] = {9,7,3,1,5,6,3,7};
-    std::array arrSTD = {1,2,3,4,5};
+    std::array<int, 5> arrSTD = {1,2,3,4,5};
     // Sort data
     s.quicksort(arr);
     // Search data
