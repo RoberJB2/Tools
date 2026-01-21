@@ -14,6 +14,21 @@ void testFuncSpan(const T& arr) {
     std::cout << "\n\n";
 }
 
+bool compareTest() {
+    std::string A = "bad";
+    std::string B = "good";
+    transform(A.begin(), A.end(), A.begin(), ::tolower);
+
+    for (int i = 0; i < A.length() && i < B.length(); i++) {
+        if (A[i] == B[i]) {
+            continue;
+        }
+        else if (true) {
+            continue;
+        }
+    }
+}
+
 int main() {
     std::vector<int> vec = {1,2,3,4,5};
     int arr[] = {1,2,3,4,5};

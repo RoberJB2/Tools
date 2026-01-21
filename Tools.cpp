@@ -132,9 +132,38 @@
         Steps: Seed generator → provide randInt, randReal → implement shuffle → implement sample-K.
 */
 
+// Compile using g++ -std=c++20 for span.
+// Modified compareStrings function for Searching
+bool compareStringsSearch(std::string &a, std::string &b) {
+    std::string A = a, B = b;
+    transform(A.begin(), A.end(), A.begin(), ::tolower);
+    transform(B.begin(), B.end(), B.begin(), ::tolower);
+
+    int sizeA = A.length();
+    int sizeB = B.length();
+    int sizeOp{};
+
+    if (sizeA > sizeB) {
+        return false;
+    }
+    else if (sizeA < sizeB) {
+        return false;
+    }
+
+    for (int i = 0; i < sizeOp; i++) {
+        if (A[i] == B[i]) {
+            continue;
+        }
+        else {
+            return false;
+        }
+    }
+return true;
+}
+
 // Binary Search
 template <typename T, typename value>
-int binarySearch(T& arr, const value& x) {
+auto binarySearch(T& arr, const value& x) {
     auto s = std::span(arr);
     int low = 0;
     int high = s.size() - 1;
@@ -155,12 +184,13 @@ int binarySearch(T& arr, const value& x) {
     }
 
     // If we reach here, then element was not present
-    return -1;
+    std::cout << "nothing found" << std::endl;
+    return;
 }
 
 // Linear Search
 template <typename T, typename value>
-int search(T& arr, const value& x) {
+auto search(T& arr, const value& x) {
     auto s = std::span(arr);
     
     // Iterate over the array in order to
@@ -168,20 +198,55 @@ int search(T& arr, const value& x) {
     for (int i = 0; i < s.size(); i++)
         if (s[i] == x)
             return i;
-    return -1;
+    return;
+}
+
+// Lambda for string searches
+template <typename T>
+void binarySearch_ci(T& v) {
+    this->binarySearch(v, [this](const std::string& a, const std::string& b) {
+        return compareStringsSearch(a, b);
+    });
+}
+template <typename T>
+void search_ci(T& v) {
+    this->search(v, [this](const std;;string& a, const std::string& b) {
+        return compareStringsSearch(a, b);
+    });
 }
 
 int main() {
+    // TESTING /////
+    // Object from Sorter.h
     Sorter s;
+
+    // Instantiation:
     int arr[] = {9,5,7,4,12};
     int arrNo[] = {9,7,3,1,5,6,3,7};
     std::array<int, 5> arrSTD = {1,2,3,4,5};
+    std::vector<int> vec = {1,7,3,7,9,5,2};
+
+    std::string arrString[] = {"woah", "squib", "blarp", "yaga", "bsdfdsf", "meow"};
+    std::array<std::string, 5> strSTD = {"woah", "squib", "blarp", "yaga", "waka"};
+    std::vector<std::string> vecStr = {"banana", "apple", "nyoom", "woah", "squib", "blarp", "yaga", "waka"};
+
     // Sort data
     s.quicksort(arr);
+    s.quicksort(vec);
+    s.quicksort(arrString);
+    s.quicksort(strSTD);
+    s.quicksort(vecStr);
+
     // Search data
     int result = binarySearch(arr, 5);
     int result2 = search(arrNo, 7);
+    int result3 = binarySearch(vec, 9);
 
+    std::string resultStr = binarySearch_ci(arrString, "yaga");
+    std::string resultStr2 = search_ci(arrString, "blarp");
+    std::string resultStr3;
+
+    // Output results:
     std::cout << arr[result] << " at " << result << ", " << arrNo[result2] << " at " << result2 << std::endl;
 
 return 0;
