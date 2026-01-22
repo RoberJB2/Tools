@@ -10,6 +10,7 @@
 #include <cctype>       // std::toupper/tolower
 #include <utility>      // std::swap
 #include <cstddef>      // std::size_t
+#include <string_view>
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -168,14 +169,14 @@ public:
     void quicksort_ci(T& v) {
         // lambda is defined *inside the class*, not in main
         this->quicksort(v, [this](const std::string& a, const std::string& b) {
-            return compareStrings(a, b);
+            return compareStrings(std::string_view(a), b);
         });
     }
     // Case insensitive lambda for string sorting (merge sort)
     template <typename T>
     void msort_ci(T& v) {
         this->msort(v, [this](const std::string& a, const std::string& b) {
-            return compareStringsMerge(a, b);
+            return compareStringsMerge(std::string_view(a), b);
         });
     }
 };

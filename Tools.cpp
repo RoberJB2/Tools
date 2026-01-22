@@ -132,93 +132,107 @@
         Steps: Seed generator → provide randInt, randReal → implement shuffle → implement sample-K.
 */
 
-// Compile using g++ -std=c++20 for span.
-// Modified compareStrings function for Searching
-bool compareStringsSearch(std::string &a, std::string &b) {
-    std::string A = a, B = b;
-    transform(A.begin(), A.end(), A.begin(), ::tolower);
-    transform(B.begin(), B.end(), B.begin(), ::tolower);
+class Search {
 
-    int sizeA = A.length();
-    int sizeB = B.length();
-    int sizeOp{};
+private:
+    // Compile using g++ -std=c++20 for span.
+    // Modified compareStrings function for Searching
+    bool compareStringsSearch(const std::string &a, const std::string &b) {
+        std::string A = a, B = b;
+        transform(A.begin(), A.end(), A.begin(), ::tolower);
+        transform(B.begin(), B.end(), B.begin(), ::tolower);
 
-    if (sizeA > sizeB) {
-        return false;
-    }
-    else if (sizeA < sizeB) {
-        return false;
-    }
+        int sizeA = A.length();
+        int sizeB = B.length();
+        int sizeOp{};
 
-    for (int i = 0; i < sizeOp; i++) {
-        if (A[i] == B[i]) {
-            continue;
-        }
-        else {
+        if (sizeA > sizeB) {
             return false;
         }
-    }
-return true;
-}
+        else if (sizeA < sizeB) {
+            return false;
+        }
 
-// Binary Search
-template <typename T, typename value>
-auto binarySearch(T& arr, const value& x) {
-    auto s = std::span(arr);
-    int low = 0;
-    int high = s.size() - 1;
-    while (low <= high) {
-        int mid = low + (high - low) / 2;
-
-        // Check if x is present at mid
-        if (s[mid] == x)
-            return mid;
-
-        // If x greater, ignore left half
-        if (s[mid] < x)
-            low = mid + 1;
-
-        // If x is smaller, ignore right half
-        else
-            high = mid - 1;
+        for (int i = 0; i < sizeOp; i++) {
+            if (A[i] == B[i]) {
+                continue;
+            }
+            else {
+                return false;
+            }
+        }
+    return true;
     }
 
-    // If we reach here, then element was not present
-    std::cout << "nothing found" << std::endl;
-    return;
-}
+public:
+    Search() = default;
 
-// Linear Search
-template <typename T, typename value>
-auto search(T& arr, const value& x) {
-    auto s = std::span(arr);
-    
-    // Iterate over the array in order to
-    // find the key x
-    for (int i = 0; i < s.size(); i++)
-        if (s[i] == x)
-            return i;
-    return;
-}
+    // Binary Search
+    template <typename T, typename Value, typename Eq>
+    void binarySearch(T& arr, const Value& x, Eq eq) const {
+        auto s = std::span(arr);
+        int low = 0;
+        int high = static_cast<int>(s.size()) - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
 
-// Lambda for string searches
-template <typename T>
-void binarySearch_ci(T& v) {
-    this->binarySearch(v, [this](const std::string& a, const std::string& b) {
-        return compareStringsSearch(a, b);
-    });
-}
-template <typename T>
-void search_ci(T& v) {
-    this->search(v, [this](const std;;string& a, const std::string& b) {
-        return compareStringsSearch(a, b);
-    });
-}
+            // Check if x is present at mid
+            if (eq(s[mid], x))
+                std::cout << "found" << std::endl;
+                return;
+
+            // If x greater, ignore left half
+            if (s[mid] < x)
+                low = mid + 1;
+
+            // If x is smaller, ignore right half
+            else
+                high = mid - 1;
+        }
+
+        // If we reach here, then element was not present
+        std::cout << "nothing found" << std::endl;
+        return;
+    }
+
+    // Linear Search
+    template <typename T, typename Value, typename Eq>
+    void search(T& arr, const Value& x, Eq eq) const {
+        auto s = std::span(arr);
+        
+        // Iterate over the array in order to
+        // find the key x
+        for (size_t i = 0; i < s.size(); i++) {
+            if (eq(s[i], x)) {
+                std::cout << "found" << std::endl;
+                return;
+            }
+        }
+        std::cout << "not found" << std::endl;
+        return;
+    }
+
+    // Lambda for string searches
+    template <typename T>
+    void binarySearch_ci(T& v, std::string_view x) const {
+        this->binarySearch(v, x, [this](const std::string& a, const std::string& b) {
+            return compareStringsSearch(std::string_view(a), b);
+        });
+    }
+    template <typename T>
+    void search_ci(T& v, std::string_view x) const {
+        this->search(v, x, [this](const std::string& a, const std::string& b) {
+            return compareStringsSearch(std::string_view(a), b);
+        });
+    }
+};
 
 int main() {
     // TESTING /////
     // Object from Sorter.h
     Sorter s;
+    // Object for Search class
+    Search so;
 
     // Instantiation:
     int arr[] = {9,5,7,4,12};
@@ -238,16 +252,12 @@ int main() {
     s.quicksort(vecStr);
 
     // Search data
-    int result = binarySearch(arr, 5);
-    int result2 = search(arrNo, 7);
-    int result3 = binarySearch(vec, 9);
+    so.binarySearch(arr, 5, std::equal);
+    so.search(arrNo, 7);
+    so.binarySearch(vec, 9);
 
-    std::string resultStr = binarySearch_ci(arrString, "yaga");
-    std::string resultStr2 = search_ci(arrString, "blarp");
+    so.binarySearch_ci(arrString, "yaga");
+    so.search_ci(arrString, std::string("blarp"));
     std::string resultStr3;
-
-    // Output results:
-    std::cout << arr[result] << " at " << result << ", " << arrNo[result2] << " at " << result2 << std::endl;
-
 return 0;
 }
