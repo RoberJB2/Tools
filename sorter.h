@@ -3,7 +3,7 @@
 #include <vector>
 #include <typeinfo>
 #include <span>
-#include <functional>
+#include <functional>   //std::less, std::equal_to
 #include <iterator>
 #include <array>        // std::array 
 #include <algorithm>    // std::transform

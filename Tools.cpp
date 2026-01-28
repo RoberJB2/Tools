@@ -168,26 +168,29 @@ public:
     Search() = default;
 
     // Binary Search
-    template <typename T, typename Value, typename Eq>
+    template <typename T, typename Value, typename Eq = std::equal_to<>>
     void binarySearch(T& arr, const Value& x, Eq eq) const {
         auto s = std::span(arr);
-        int low = 0;
+        int low{};
         int high = static_cast<int>(s.size()) - 1;
         while (low <= high) {
             int mid = low + (high - low) / 2;
 
             // Check if x is present at mid
-            if (eq(s[mid], x))
+            if (eq(s[mid], x)) {
                 std::cout << "found" << std::endl;
                 return;
+            }
 
             // If x greater, ignore left half
-            if (s[mid] < x)
+            if (s[mid] < x) {
                 low = mid + 1;
+            }
 
             // If x is smaller, ignore right half
-            else
+            else {
                 high = mid - 1;
+            }
         }
 
         // If we reach here, then element was not present
@@ -252,9 +255,13 @@ int main() {
     s.quicksort(vecStr);
 
     // Search data
-    so.binarySearch(arr, 5, std::equal);
-    so.search(arrNo, 7);
-    so.binarySearch(vec, 9);
+    so.binarySearch(arr, 5);
+    so.search(arrNo, 7, [](int a, int b) {
+        return a == b;
+    });
+    so.binarySearch(vec, 9, [](int a, int b) {
+        return a == b;
+    });
 
     so.binarySearch_ci(arrString, "yaga");
     so.search_ci(arrString, std::string("blarp"));
