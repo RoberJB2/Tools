@@ -169,7 +169,8 @@ public:
 
     // Binary Search
     template <typename T, typename Value, typename Eq = std::equal_to<>>
-    void binarySearch(T& arr, const Value& x, Eq eq) const {
+    void binarySearch(T& arr, const Value& x) const {
+        Eq eq; // typename object creating a default parameter for Eq
         auto s = std::span(arr);
         int low{};
         int high = static_cast<int>(s.size()) - 1;
@@ -178,7 +179,7 @@ public:
 
             // Check if x is present at mid
             if (eq(s[mid], x)) {
-                std::cout << "found" << std::endl;
+                std::cout << x << "was found." << std::endl;
                 return;
             }
 
@@ -194,13 +195,14 @@ public:
         }
 
         // If we reach here, then element was not present
-        std::cout << "nothing found" << std::endl;
+        std::cout << x << "not found." << std::endl;
         return;
     }
 
     // Linear Search
-    template <typename T, typename Value, typename Eq>
-    void search(T& arr, const Value& x, Eq eq) const {
+    template <typename T, typename Value, typename Eq = std::equal_to<>>
+    void search(T& arr, const Value& x) const {
+        Eq eq; // typename object
         auto s = std::span(arr);
         
         // Iterate over the array in order to
@@ -256,15 +258,13 @@ int main() {
 
     // Search data
     so.binarySearch(arr, 5);
-    so.search(arrNo, 7, [](int a, int b) {
-        return a == b;
-    });
-    so.binarySearch(vec, 9, [](int a, int b) {
-        return a == b;
-    });
+    so.search(arrNo, 7);
+    so.binarySearch(vec, 9);
 
+    // Search strings
     so.binarySearch_ci(arrString, "yaga");
     so.search_ci(arrString, std::string("blarp"));
     std::string resultStr3;
+    
 return 0;
 }
