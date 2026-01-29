@@ -137,10 +137,11 @@ class Search {
 private:
     // Compile using g++ -std=c++20 for span.
     // Modified compareStrings function for Searching
-    bool compareStringsSearch(const std::string &a, const std::string &b) {
-        std::string A = a, B = b;
-        transform(A.begin(), A.end(), A.begin(), ::tolower);
-        transform(B.begin(), B.end(), B.begin(), ::tolower);
+    bool compareStringsSearch(const std::string_view &a, const std::string &b) const {
+        std::string_view A = a;
+        std::string B = b;
+        std::transform(A.begin(), A.end(), A.begin(), ::tolower);
+        std::transform(B.begin(), B.end(), B.begin(), ::tolower);
 
         int sizeA = A.length();
         int sizeB = B.length();
@@ -265,6 +266,6 @@ int main() {
     so.binarySearch_ci(arrString, "yaga");
     so.search_ci(arrString, std::string("blarp"));
     std::string resultStr3;
-    
+
 return 0;
 }
