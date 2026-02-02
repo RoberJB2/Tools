@@ -136,31 +136,17 @@ class Search {
 
 private:
     // Compile using g++ -std=c++20 for span.
+
+    static unsigned char lower_uc(unsigned char c) {
+        return static_cast<unsigned char>(std::tolower(c));
+    }
     // Modified compareStrings function for Searching
-    bool compareStringsSearch(const std::string_view &a, const std::string &b) const {
-        std::string_view A = a;
-        std::string B = b;
-        std::transform(A.begin(), A.end(), A.begin(), ::tolower);
-        std::transform(B.begin(), B.end(), B.begin(), ::tolower);
-
-        int sizeA = A.length();
-        int sizeB = B.length();
-        int sizeOp{};
-
-        if (sizeA > sizeB) {
-            return false;
-        }
-        else if (sizeA < sizeB) {
-            return false;
-        }
-
-        for (int i = 0; i < sizeOp; i++) {
-            if (A[i] == B[i]) {
-                continue;
-            }
-            else {
+    bool compareStringsSearch(const std::string_view &a, const std::string_view &b) const {
+        if (a.size() != b.size()) return false;
+        for (size_t i = 0; i < a.size(); ++i) {
+            if (lower_uc(static_cast<unsigned char>(a[i])) !=
+                lower_uc(static_cast<unsigned char>(b[i])))
                 return false;
-            }
         }
     return true;
     }
@@ -169,10 +155,12 @@ public:
     Search() = default;
 
     // Binary Search
-    template <typename T, typename Value, typename Eq = std::equal_to<>>
-    void binarySearch(T& arr, const Value& x) const {
-        Eq eq; // typename object creating a default parameter for Eq
+    template <typename T, typename Value, typename Eq = std::equal_to<>, typename Less = std::less<T>>
+    void binarySearch(T& arr, const Value& x, Eq eq = {}) const {
+        // typename object creating a default parameter for Eq
         auto s = std::span(arr);
+        Less less{};
+
         int low{};
         int high = static_cast<int>(s.size()) - 1;
         while (low <= high) {
@@ -185,7 +173,7 @@ public:
             }
 
             // If x greater, ignore left half
-            if (s[mid] < x) {
+            if (less(s[mid] < x)) {
                 low = mid + 1;
             }
 
@@ -202,8 +190,7 @@ public:
 
     // Linear Search
     template <typename T, typename Value, typename Eq = std::equal_to<>>
-    void search(T& arr, const Value& x) const {
-        Eq eq; // typename object
+    void search(T& arr, const Value& x, Eq eq = {}) const {
         auto s = std::span(arr);
         
         // Iterate over the array in order to
@@ -222,7 +209,7 @@ public:
     template <typename T>
     void binarySearch_ci(T& v, std::string_view x) const {
         this->binarySearch(v, x, [this](const std::string& a, const std::string& b) {
-            return compareStringsSearch(std::string_view(a), b);
+            return compareStringsSearch(std::string_view(a), std::string_view(b));
         });
     }
     template <typename T>
