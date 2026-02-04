@@ -16,14 +16,14 @@ private:
         return static_cast<unsigned char>(std::tolower(c));
     }
 
-    bool compareStringsSearch(const std::string_view &a, const std::string_view &b) const {
+    bool compareStringsSearch(const std::string &a, const std::string &b) {
         if (a.size() != b.size()) return false;
-        for (size_t i = 0; i < a.size(); ++i) {
+        for (std::size_t i = 0; i < a.size(); ++i) {
             if (lower_uc(static_cast<unsigned char>(a[i])) !=
                 lower_uc(static_cast<unsigned char>(b[i])))
                 return false;
         }
-    return true;
+        return true;
     }
 
     bool compareStrings(const std::string &a, const std::string &b) {
@@ -33,8 +33,8 @@ private:
         return A < B;
     }
 public:
-    template <typename T, typename Value, typename Eq = std::equal_to<>>
-    void search(T& arr, const Value& x, Eq eq = {}) const {
+    template <typename T, typename Value, typename Eq>
+    void search(T& arr, const Value& x, Eq eq) {
         auto s = std::span(arr);
         
         // Iterate over the array in order to
@@ -56,6 +56,7 @@ public:
         });
     }
 
+    /*
     template <typename T>
     void quicksort_ci(T& v) {
         // lambda is defined *inside the class*, not in main
@@ -63,21 +64,18 @@ public:
             return compareStrings(std::string_view(a), b);
         });
     }
-};
-
-
+    */
+}; 
 
 int main() {
     std::vector<int> vec = {1,2,3,4,5};
     int arr[] = {1,2,3,4,5};
     std::array<int, 5> c_arr = {1,2,3,4,5};
+    std::string arrStr[] = {"apple", "eggs", "wow"};
 
+    Search so;
 
-    std::cout << "Non-span test: \n" << std::endl;
-
-    //testFunc(vec);
-    //testFunc(arr);
-    //testFunc(c_arr);
+    so.search_ci(arr, "wow");
 
     return 0;
 }

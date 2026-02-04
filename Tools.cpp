@@ -143,7 +143,7 @@ private:
     // Modified compareStrings function for Searching
     bool compareStringsSearch(const std::string_view &a, const std::string_view &b) const {
         if (a.size() != b.size()) return false;
-        for (size_t i = 0; i < a.size(); ++i) {
+        for (std::size_t i = 0; i < a.size(); ++i) {
             if (lower_uc(static_cast<unsigned char>(a[i])) !=
                 lower_uc(static_cast<unsigned char>(b[i])))
                 return false;
