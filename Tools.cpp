@@ -141,12 +141,12 @@ private:
         return static_cast<unsigned char>(std::tolower(c));
     }
     // Modified compareStrings function for Searching
-    bool compareStringsSearch(const std::string_view &a, const std::string_view &b) const {
+    bool compareStringsSearch(std::string_view a, std::string_view b) {
         if (a.size() != b.size()) return false;
         for (std::size_t i = 0; i < a.size(); ++i) {
-            if (lower_uc(static_cast<unsigned char>(a[i])) !=
-                lower_uc(static_cast<unsigned char>(b[i])))
-                return false;
+            unsigned char ca = static_cast<unsigned char>(a[i]);
+            unsigned char cb = static_cast<unsigned char>(b[i]);
+            if (std::tolower(ca) != std::tolower(cb)) return false;
         }
     return true;
     }
@@ -156,10 +156,9 @@ public:
 
     // Binary Search
     template <typename T, typename Value, typename Eq = std::equal_to<>, typename Less = std::less<T>>
-    void binarySearch(T& arr, const Value& x, Eq eq = {}) const {
+    void binarySearch(T& arr, const Value& x, Eq eq = {}, Less less = {}) const {
         // typename object creating a default parameter for Eq
         auto s = std::span(arr);
-        Less less{};
 
         int low{};
         int high = static_cast<int>(s.size()) - 1;
@@ -207,15 +206,15 @@ public:
 
     // Lambda for string searches
     template <typename T>
-    void binarySearch_ci(T& v, std::string_view x) const {
+    void binarySearch_ci(T& v, std::string_view x) {
         this->binarySearch(v, x, [this](const std::string& a, const std::string& b) {
-            return compareStringsSearch(std::string_view(a), std::string_view(b));
+            return compareStringsSearch(a, b);
         });
     }
     template <typename T>
-    void search_ci(T& v, std::string_view x) const {
+    void search_ci(T& v, std::string_view x) {
         this->search(v, x, [this](const std::string& a, const std::string& b) {
-            return compareStringsSearch(std::string_view(a), b);
+            return compareStringsSearch(a, b);
         });
     }
 };

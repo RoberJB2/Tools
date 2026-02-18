@@ -16,17 +16,17 @@ private:
         return static_cast<unsigned char>(std::tolower(c));
     }
 
-    bool compareStringsSearch(const std::string &a, const std::string &b) {
+    bool compareStringsSearch(std::string_view a, std::string_view b) {
         if (a.size() != b.size()) return false;
         for (std::size_t i = 0; i < a.size(); ++i) {
-            if (lower_uc(static_cast<unsigned char>(a[i])) !=
-                lower_uc(static_cast<unsigned char>(b[i])))
-                return false;
+            unsigned char ca = static_cast<unsigned char>(a[i]);
+            unsigned char cb = static_cast<unsigned char>(b[i]);
+            if (std::tolower(ca) != std::tolower(cb)) return false;
         }
         return true;
     }
 
-    bool compareStrings(const std::string &a, const std::string &b) {
+    bool compareStrings(std::string &a, std::string &b) {
         std::string A = a, B = b;
         transform(A.begin(), A.end(), A.begin(), ::tolower);
         transform(B.begin(), B.end(), B.begin(), ::tolower);
