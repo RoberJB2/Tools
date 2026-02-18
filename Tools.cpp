@@ -136,10 +136,6 @@ class Search {
 
 private:
     // Compile using g++ -std=c++20 for span.
-
-    static unsigned char lower_uc(unsigned char c) {
-        return static_cast<unsigned char>(std::tolower(c));
-    }
     // Modified compareStrings function for Searching
     bool compareStringsSearch(std::string_view a, std::string_view b) {
         if (a.size() != b.size()) return false;
@@ -155,7 +151,7 @@ public:
     Search() = default;
 
     // Binary Search
-    template <typename T, typename Value, typename Eq = std::equal_to<>, typename Less = std::less<T>>
+    template <typename T, typename Value, typename Eq = std::equal_to<>, typename Less = std::less<>>
     void binarySearch(T& arr, const Value& x, Eq eq = {}, Less less = {}) const {
         // typename object creating a default parameter for Eq
         auto s = std::span(arr);
@@ -164,18 +160,18 @@ public:
         int high = static_cast<int>(s.size()) - 1;
         while (low <= high) {
             int mid = low + (high - low) / 2;
+            const auto& temp = s[mid];
 
             // Check if x is present at mid
-            if (eq(s[mid], x)) {
-                std::cout << x << "was found." << std::endl;
+            if (eq(temp, x)) {
+                std::cout << x << " was found." << std::endl;
                 return;
             }
 
             // If x greater, ignore left half
-            if (less(s[mid] < x)) {
+            if (less(temp, x)) {
                 low = mid + 1;
             }
-
             // If x is smaller, ignore right half
             else {
                 high = mid - 1;
@@ -196,7 +192,7 @@ public:
         // find the key x
         for (size_t i = 0; i < s.size(); i++) {
             if (eq(s[i], x)) {
-                std::cout << "found" << std::endl;
+                std::cout << s[i] << " was found" << std::endl;
                 return;
             }
         }
@@ -207,13 +203,13 @@ public:
     // Lambda for string searches
     template <typename T>
     void binarySearch_ci(T& v, std::string_view x) {
-        this->binarySearch(v, x, [this](const std::string& a, const std::string& b) {
+        this->binarySearch(v, x, [this](const std::string_view a, const std::string_view b) {
             return compareStringsSearch(a, b);
         });
     }
     template <typename T>
     void search_ci(T& v, std::string_view x) {
-        this->search(v, x, [this](const std::string& a, const std::string& b) {
+        this->search(v, x, [this](const std::string_view a, const std::string_view b) {
             return compareStringsSearch(a, b);
         });
     }
@@ -247,11 +243,6 @@ int main() {
     so.binarySearch(arr, 5);
     so.search(arrNo, 7);
     so.binarySearch(vec, 9);
-
-    // Search strings
-    so.binarySearch_ci(arrString, "yaga");
-    so.search_ci(arrString, std::string("blarp"));
-    std::string resultStr3;
 
 return 0;
 }
