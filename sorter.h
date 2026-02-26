@@ -1,16 +1,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <typeinfo>
+#include <typeinfo>     // type checking
 #include <span>
 #include <functional>   //std::less, std::equal_to
-#include <iterator>
+#include <iterator>     
 #include <array>        // std::array 
 #include <algorithm>    // std::transform
 #include <cctype>       // std::toupper/tolower
 #include <utility>      // std::swap
 #include <cstddef>      // std::size_t
-#include <string_view>
+#include <string_view>  // Read-only string accesor
 // NOT USING NAMESPACE STD FOR MORE ROBUST CODE
 
 /*
@@ -26,7 +26,6 @@
         - Understanding typename and span. The compilar wants to decide these separately
             Can not decide them both at the same time ex: "std::span<T> someVariableName" can not be a function param
             unless you are passing in a variable of type T.
-        
 */
 
 class Sorter {

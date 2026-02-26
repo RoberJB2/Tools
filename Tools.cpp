@@ -132,11 +132,13 @@
         Steps: Seed generator → provide randInt, randReal → implement shuffle → implement sample-K.
 */
 
+
 class Search {
 
 private:
     // Compile using g++ -std=c++20 for span.
     // Modified compareStrings function for Searching
+    // Use the library version function instead. Case-insensitive function pre-built
     bool compareStringsSearch(std::string_view a, std::string_view b) {
         if (a.size() != b.size()) return false;
         for (std::size_t i = 0; i < a.size(); ++i) {
@@ -144,15 +146,32 @@ private:
             unsigned char cb = static_cast<unsigned char>(b[i]);
             if (std::tolower(ca) != std::tolower(cb)) return false;
         }
-    return true;
     }
 
 public:
     Search() = default;
 
+    friend bool operator==(std::string_view a, std::string_view b) {
+        Search s;
+        if (s.compareStringsSearch(a, b) == true) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    friend bool operator>(std::string_view a, std::string_view b) {
+
+    }
+
+    friend bool operator<(std::string_view a, std::string_view b) {
+        
+    }
+
     // Binary Search
-    template <typename T, typename Value, typename Eq = std::equal_to<>, typename Less = std::less<>>
-    void binarySearch(T& arr, const Value& x, Eq eq = {}, Less less = {}) const {
+    template <typename T, typename Value, typename Less = std::less<>>
+    void binarySearch(T& arr, const Value& x, Less less = {}) const {
         // typename object creating a default parameter for Eq
         auto s = std::span(arr);
 
@@ -163,7 +182,7 @@ public:
             const auto& temp = s[mid];
 
             // Check if x is present at mid
-            if (eq(temp, x)) {
+            if (temp == x) {
                 std::cout << x << " was found." << std::endl;
                 return;
             }
@@ -184,14 +203,14 @@ public:
     }
 
     // Linear Search
-    template <typename T, typename Value, typename Eq = std::equal_to<>>
-    void search(T& arr, const Value& x, Eq eq = {}) const {
+    template <typename T, typename Value>
+    void search(T& arr, const Value& x) const {
         auto s = std::span(arr);
         
         // Iterate over the array in order to
         // find the key x
         for (size_t i = 0; i < s.size(); i++) {
-            if (eq(s[i], x)) {
+            if (s[i] == x) {
                 std::cout << s[i] << " was found" << std::endl;
                 return;
             }
